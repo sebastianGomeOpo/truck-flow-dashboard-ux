@@ -75,28 +75,34 @@
   }
   
   body {
-    @apply bg-background text-foreground font-sans;
+    @apply bg-[#F5F7FA] text-foreground font-sans;
   }
 
+  /* Typography according to specifications */
   h1 {
-    @apply text-3xl font-bold tracking-tight;
+    @apply text-[28px] font-semibold tracking-tight;
   }
   
   h2 {
-    @apply text-2xl font-semibold tracking-tight;
+    @apply text-[20px] font-semibold tracking-tight;
   }
   
   h3 {
-    @apply text-xl font-semibold tracking-tight;
-  }
-
-  h4 {
     @apply text-lg font-semibold tracking-tight;
   }
 
-  p {
-    @apply leading-6;
+  h4 {
+    @apply text-base font-semibold tracking-tight;
   }
+
+  p {
+    @apply text-sm leading-6;
+  }
+}
+
+/* Focus styles for accessibility */
+:focus-visible {
+  @apply outline-none ring-2 ring-primary ring-offset-2;
 }
 
 /* Data table styles */
@@ -113,11 +119,11 @@
 }
 
 .truck-table th {
-  @apply px-4 py-3 text-left text-sm font-medium text-muted-foreground whitespace-nowrap sticky top-0 bg-background;
+  @apply px-4 py-3 text-left text-sm font-medium text-muted-foreground whitespace-nowrap sticky top-0 bg-background z-10;
 }
 
 .truck-table tbody tr {
-  @apply border-b transition-colors hover:bg-muted/30;
+  @apply border-b transition-colors hover:bg-muted/30 focus:bg-muted/50;
 }
 
 .truck-table td {
@@ -133,4 +139,57 @@
   .mobile-stack > * {
     @apply w-full mb-4;
   }
+  
+  /* Convert table to list view on mobile */
+  .truck-table.mobile-view {
+    @apply block;
+  }
+  
+  .truck-table.mobile-view thead {
+    @apply hidden;
+  }
+  
+  .truck-table.mobile-view tbody {
+    @apply block;
+  }
+  
+  .truck-table.mobile-view tr {
+    @apply block border border-border rounded-md mb-2 p-2;
+  }
+  
+  .truck-table.mobile-view td {
+    @apply flex justify-between items-center border-b-0 py-1;
+  }
+  
+  .truck-table.mobile-view td:before {
+    content: attr(data-label);
+    @apply font-medium mr-2;
+  }
+}
+
+/* Keyboard shortcuts */
+body {
+  @apply min-h-screen;
+}
+
+/* Custom shadow for scroll containers */
+.shadow-inset-y {
+  box-shadow: inset 0 5px 5px -5px rgba(0, 0, 0, 0.1), 
+              inset 0 -5px 5px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* Animation for delay alert */
+@keyframes border-pulse {
+  0%, 100% {
+    border-left-color: theme('colors.destructive.DEFAULT');
+    border-left-width: 4px;
+  }
+  50% {
+    border-left-color: transparent;
+    border-left-width: 2px;
+  }
+}
+
+.animate-border-pulse {
+  animation: border-pulse 2s infinite;
 }

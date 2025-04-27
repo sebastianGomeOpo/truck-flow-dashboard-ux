@@ -15,7 +15,7 @@ export default {
 			center: true,
 			padding: '1rem',
 			screens: {
-				'2xl': '1400px'
+				'2xl': '1440px'
 			}
 		},
 		extend: {
@@ -54,7 +54,7 @@ export default {
 					900: '#653B00',
 				},
 				destructive: {
-					DEFAULT: '#E53935',
+					DEFAULT: '#EF4444',
 					foreground: '#FFFFFF',
 				},
 				warning: {
@@ -62,7 +62,11 @@ export default {
 					foreground: '#000000',
 				},
 				success: {
-					DEFAULT: '#2E7D32',
+					DEFAULT: '#10B981',
+					foreground: '#FFFFFF',
+				},
+				info: {
+					DEFAULT: '#3B82F6',
 					foreground: '#FFFFFF',
 				},
 				muted: {
@@ -107,6 +111,14 @@ export default {
 				"slide-in": {
 					"0%": { transform: "translateX(-100%)" },
 					"100%": { transform: "translateX(0)" },
+				},
+				"rotate-refresh": {
+					"0%": { transform: "rotate(0deg)" },
+					"100%": { transform: "rotate(360deg)" },
+				},
+				"border-pulse": {
+					"0%, 100%": { borderLeftColor: "transparent" },
+					"50%": { borderLeftColor: "#EF4444" },
 				}
 			},
 			animation: {
@@ -115,6 +127,8 @@ export default {
 				"pulse-slow": "pulse-slow 3s ease-in-out infinite",
 				"fade-in": "fade-in 0.5s ease-out",
 				"slide-in": "slide-in 0.3s ease-out",
+				"rotate-refresh": "rotate-refresh 0.6s ease-out",
+				"border-pulse": "border-pulse 2s infinite",
 			},
 			fontFamily: {
 				sans: ['Inter', 'sans-serif'],

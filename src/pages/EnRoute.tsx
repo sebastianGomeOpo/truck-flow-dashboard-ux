@@ -1,8 +1,10 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
 import OrdersTable, { Order } from "@/components/OrdersTable";
 import KPICard from "@/components/KPICard";
+import RefreshButton from "@/components/RefreshButton";
+import { Truck, Clock, AlertTriangle } from "lucide-react";
 
 // Mock data
 const mockOrders: Order[] = [
@@ -49,12 +51,31 @@ const mockOrders: Order[] = [
 ];
 
 export default function EnRoute() {
-  const [orders] = useState<Order[]>(mockOrders);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  
+  // Simulate loading data
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setOrders(mockOrders);
+      setIsLoading(false);
+    }, 800);
+    
+    return () => clearTimeout(timer);
+  }, []);
   
   const handleViewDetails = (orderId: string) => {
     console.log(`Viewing details for order: ${orderId}`);
-    // In a real application, this would navigate to a detail page
-    // or open a modal with the order details
+    // In a real application, this would open a drawer with order details
+  };
+  
+  const handleRefresh = () => {
+    setIsLoading(true);
+    // Simulate refreshing data
+    setTimeout(() => {
+      setOrders(mockOrders);
+      setIsLoading(false);
+    }, 800);
   };
   
   return (
@@ -69,45 +90,48 @@ export default function EnRoute() {
           description="Camiones actualmente en tránsito"
           trend={2}
           variant="default"
+          icon={<Truck className="h-5 w-5 text-gray-600/20" />}
         />
         <KPICard
           title="Tiempo Est. de Llegada"
           value="28 min"
           description="Promedio para próximas llegadas"
           variant="default"
+          icon={<Clock className="h-5 w-5 text-gray-600/20" />}
         />
         <KPICard
           title="Camiones Retrasados"
           value={1}
           description="Camiones con retraso en tránsito"
           variant="warning"
+          icon={<AlertTriangle className="h-5 w-5 text-gray-600/20" />}
         />
       </div>
       
       <div className="bg-white dark:bg-card rounded-lg shadow-sm border p-4 mb-6">
         <h3 className="text-sm font-medium mb-2">Estado del tráfico</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-green-50 dark:bg-green-900/20 p-3 rounded-md">
+          <div className="bg-success/10 p-3 rounded-md">
             <span className="text-xs text-muted-foreground">Norte</span>
-            <p className="font-medium text-green-700 dark:text-green-400">Fluido</p>
+            <p className="font-medium text-success">Fluido</p>
           </div>
-          <div className="bg-yellow-50 dark:bg-yellow-900/20 p-3 rounded-md">
+          <div className="bg-warning/10 p-3 rounded-md">
             <span className="text-xs text-muted-foreground">Sur</span>
-            <p className="font-medium text-yellow-700 dark:text-yellow-400">Moderado</p>
+            <p className="font-medium text-warning">Moderado</p>
           </div>
-          <div className="bg-red-50 dark:bg-red-900/20 p-3 rounded-md">
+          <div className="bg-destructive/10 p-3 rounded-md">
             <span className="text-xs text-muted-foreground">Este</span>
-            <p className="font-medium text-red-700 dark:text-red-400">Congestionado</p>
+            <p className="font-medium text-destructive">Congestionado</p>
           </div>
-          <div className="bg-green-50 dark:bg-green-900/20 p-3 rounded-md">
+          <div className="bg-success/10 p-3 rounded-md">
             <span className="text-xs text-muted-foreground">Oeste</span>
-            <p className="font-medium text-green-700 dark:text-green-400">Fluido</p>
+            <p className="font-medium text-success">Fluido</p>
           </div>
         </div>
       </div>
       
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold">Camiones En Camino</h2>
+        <h2 className="text-[20px] font-semibold">Camiones En Camino</h2>
         <select className="text-sm border rounded-md px-2 py-1">
           <option value="all">Todos los destinos</option>
           <option value="north">Terminal Norte</option>
@@ -117,7 +141,14 @@ export default function EnRoute() {
         </select>
       </div>
       
-      <OrdersTable orders={orders} onViewDetails={handleViewDetails} />
+      <OrdersTable 
+        orders={orders} 
+        onViewDetails={handleViewDetails} 
+        isLoading={isLoading}
+        variant="en-route"
+      />
+      
+      <RefreshButton onRefresh={handleRefresh} />
     </DashboardLayout>
   );
 }
