@@ -1,8 +1,9 @@
 
 import { useState } from "react";
-import DashboardLayout from "@/components/DashboardLayout";
+import MainLayout from "@/components/MainLayout";
 import OrdersTable, { Order } from "@/components/OrdersTable";
 import KPICard from "@/components/KPICard";
+import { Truck, Clock, AlertTriangle } from "lucide-react";
 
 // Mock data
 const mockOrders: Order[] = [
@@ -65,6 +66,7 @@ const mockOrders: Order[] = [
 
 export default function ActiveOrders() {
   const [orders] = useState<Order[]>(mockOrders);
+  const [isLoading, setIsLoading] = useState(false);
   
   const handleViewDetails = (orderId: string) => {
     console.log(`Viewing details for order: ${orderId}`);
@@ -73,10 +75,14 @@ export default function ActiveOrders() {
   };
   
   return (
-    <DashboardLayout 
-      title="Órdenes Activas" 
-      description="Monitor de órdenes actualmente en proceso"
-    >
+    <MainLayout>
+      <div className="mb-6">
+        <h1 className="text-[32px] font-semibold mb-2">Órdenes Activas</h1>
+        <p className="text-muted-foreground">
+          Monitor de órdenes actualmente en proceso
+        </p>
+      </div>
+      
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <KPICard
           title="Órdenes Activas"
@@ -84,6 +90,7 @@ export default function ActiveOrders() {
           description="Órdenes en proceso actualmente"
           trend={5}
           variant="default"
+          icon={<Truck className="size-5 text-slate-600" />}
         />
         <KPICard
           title="Tiempo Promedio"
@@ -91,6 +98,7 @@ export default function ActiveOrders() {
           description="Tiempo promedio de procesamiento"
           trend={-8}
           variant="success"
+          icon={<Clock className="size-5 text-green-600" />}
         />
         <KPICard
           title="Órdenes Retrasadas"
@@ -98,27 +106,19 @@ export default function ActiveOrders() {
           description="Órdenes fuera del tiempo objetivo"
           trend={15}
           variant="danger"
+          icon={<AlertTriangle className="size-5 text-red-600" />}
         />
       </div>
       
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold">Lista de Órdenes Activas</h2>
-        <div className="flex gap-2">
-          <select className="text-sm border rounded-md px-2 py-1">
-            <option value="all">Todos los estados</option>
-            <option value="active">Activas</option>
-            <option value="delayed">Retrasadas</option>
-          </select>
-          <select className="text-sm border rounded-md px-2 py-1">
-            <option value="all">Todas las prioridades</option>
-            <option value="high">Alta</option>
-            <option value="medium">Media</option>
-            <option value="low">Baja</option>
-          </select>
-        </div>
+      <div className="mb-4">
+        <h2 className="text-xl font-semibold mb-4">Lista de Órdenes Activas</h2>
       </div>
       
-      <OrdersTable orders={orders} onViewDetails={handleViewDetails} />
-    </DashboardLayout>
+      <OrdersTable 
+        orders={orders} 
+        onViewDetails={handleViewDetails}
+        loading={isLoading}
+      />
+    </MainLayout>
   );
 }

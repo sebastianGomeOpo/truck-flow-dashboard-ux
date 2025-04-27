@@ -1,6 +1,11 @@
 
-import StatusBadge from "./StatusBadge";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import StatusBadge from "./StatusBadge";
+import { cn } from "@/lib/utils";
+import TableSkeleton from "./TableSkeleton";
 
 // Define the order interface based on the requirements
 export interface Order {
@@ -17,13 +22,20 @@ export interface Order {
 
 interface OrdersTableProps {
   orders: Order[];
+  loading?: boolean;
   onViewDetails?: (orderId: string) => void;
 }
 
-export default function OrdersTable({ orders, onViewDetails }: OrdersTableProps) {
+export default function OrdersTable({ orders, loading = false, onViewDetails }: OrdersTableProps) {
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  
+  if (loading) {
+    return <TableSkeleton rows={5} columns={6} />;
+  }
+  
   if (orders.length === 0) {
     return (
-      <div className="bg-white dark:bg-card rounded-lg shadow-sm p-8 text-center border">
+      <div className="bg-white rounded-lg shadow-sm p-8 text-center border">
         <p className="text-muted-foreground">No hay órdenes para mostrar</p>
       </div>
     );
@@ -31,9 +43,9 @@ export default function OrdersTable({ orders, onViewDetails }: OrdersTableProps)
 
   const getPriorityClass = (priority: string) => {
     switch (priority) {
-      case 'high': return 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400';
-      case 'medium': return 'bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-400';
-      case 'low': return 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400';
+      case 'high': return 'bg-red-50 text-red-700';
+      case 'medium': return 'bg-yellow-50 text-yellow-700';
+      case 'low': return 'bg-green-50 text-green-700';
       default: return '';
     }
   };
@@ -50,53 +62,142 @@ export default function OrdersTable({ orders, onViewDetails }: OrdersTableProps)
     }
   };
 
+  const isRowCritical = (order: Order) => {
+    return order.timeRemaining !== undefined && order.timeRemaining < -20;
+  };
+  
+  const handleRowClick = (order: Order) => {
+    setSelectedOrder(order);
+    if (onViewDetails) {
+      onViewDetails(order.id);
+    }
+  };
+
+  // Get current time for "last updated" display
+  const updatedTime = new Date().toLocaleTimeString('es-ES', { 
+    hour: '2-digit', 
+    minute: '2-digit'
+  });
+
   return (
-    <div className="bg-white dark:bg-card rounded-lg shadow-sm border">
-      <div className="table-container">
-        <table className="truck-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Chofer</th>
-              <th>Placa</th>
-              <th>Destino</th>
-              <th>Estado</th>
-              <th>Llegada</th>
-              <th>Tiempo</th>
-              <th>Prioridad</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {orders.map((order) => (
-              <tr key={order.id}>
-                <td className="font-medium">{order.id}</td>
-                <td>{order.driverName}</td>
-                <td>{order.plate}</td>
-                <td className="max-w-[180px] truncate">{order.destination}</td>
-                <td><StatusBadge status={order.status} /></td>
-                <td>{order.arrivalTime}</td>
-                <td>{formatTimeRemaining(order.timeRemaining)}</td>
-                <td>
-                  <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${getPriorityClass(order.priority)}`}>
-                    {order.priority === 'high' ? 'Alta' : 
-                     order.priority === 'medium' ? 'Media' : 'Baja'}
-                  </span>
-                </td>
-                <td>
-                  <Button 
-                    variant="ghost" 
-                    size="sm"
-                    onClick={() => onViewDetails?.(order.id)}
-                  >
-                    Detalles
-                  </Button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+    <div className="space-y-2">
+      <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[100px]">ID</TableHead>
+              <TableHead>Chofer</TableHead>
+              <TableHead>Placa</TableHead>
+              <TableHead className="hidden md:table-cell">Destino</TableHead>
+              <TableHead>Estado</TableHead>
+              <TableHead className="hidden md:table-cell">Llegada</TableHead>
+              <TableHead>Tiempo</TableHead>
+              <TableHead className="hidden md:table-cell">Prioridad</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {orders.map((order) => {
+              const isCritical = isRowCritical(order);
+              
+              return (
+                <TableRow 
+                  key={order.id}
+                  className={cn(
+                    "cursor-pointer hover:bg-gray-100 transition-colors",
+                    isCritical && "relative pulse-border"
+                  )}
+                  onClick={() => handleRowClick(order)}
+                >
+                  {/* Critical indicator */}
+                  {isCritical && (
+                    <span className="absolute left-0 top-0 bottom-0 w-1 bg-red-600" />
+                  )}
+                  
+                  <TableCell className="font-medium">{order.id}</TableCell>
+                  <TableCell>{order.driverName}</TableCell>
+                  <TableCell>{order.plate}</TableCell>
+                  <TableCell className="max-w-[180px] truncate hidden md:table-cell">{order.destination}</TableCell>
+                  <TableCell><StatusBadge status={order.status} /></TableCell>
+                  <TableCell className="hidden md:table-cell">{order.arrivalTime}</TableCell>
+                  <TableCell>{formatTimeRemaining(order.timeRemaining)}</TableCell>
+                  <TableCell className="hidden md:table-cell">
+                    <span className={cn(
+                      "inline-flex items-center px-2 py-0.5 rounded text-xs font-medium",
+                      getPriorityClass(order.priority)
+                    )}>
+                      {order.priority === 'high' ? 'Alta' : 
+                      order.priority === 'medium' ? 'Media' : 'Baja'}
+                    </span>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
       </div>
+      
+      <div className="text-xs text-muted-foreground text-right">
+        Actualizado: {updatedTime}
+      </div>
+      
+      {/* Detail drawer */}
+      <Drawer>
+        <DrawerTrigger asChild>
+          <span className="sr-only">Open Detail</span>
+        </DrawerTrigger>
+        <DrawerContent>
+          {selectedOrder && (
+            <>
+              <DrawerHeader>
+                <DrawerTitle>Detalle de Orden: {selectedOrder.id}</DrawerTitle>
+              </DrawerHeader>
+              <div className="px-4 py-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <h4 className="text-sm font-medium text-muted-foreground">Chofer</h4>
+                    <p>{selectedOrder.driverName}</p>
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-medium text-muted-foreground">Placa</h4>
+                    <p>{selectedOrder.plate}</p>
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-medium text-muted-foreground">Estado</h4>
+                    <StatusBadge status={selectedOrder.status} />
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-medium text-muted-foreground">Prioridad</h4>
+                    <span className={cn(
+                      "inline-flex items-center px-2 py-0.5 rounded text-xs font-medium",
+                      getPriorityClass(selectedOrder.priority)
+                    )}>
+                      {selectedOrder.priority === 'high' ? 'Alta' : 
+                      selectedOrder.priority === 'medium' ? 'Media' : 'Baja'}
+                    </span>
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-medium text-muted-foreground">Hora de llegada</h4>
+                    <p>{selectedOrder.arrivalTime}</p>
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-medium text-muted-foreground">Destino</h4>
+                    <p>{selectedOrder.destination}</p>
+                  </div>
+                </div>
+                
+                <div className="border-t mt-4 pt-4">
+                  <Button 
+                    className="w-full" 
+                    variant={selectedOrder.status === 'critical' ? 'destructive' : 'default'}
+                  >
+                    {selectedOrder.status === 'critical' ? 'Atender urgentemente' : 'Procesar orden'}
+                  </Button>
+                </div>
+              </div>
+            </>
+          )}
+        </DrawerContent>
+      </Drawer>
     </div>
   );
 }

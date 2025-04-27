@@ -1,8 +1,9 @@
 
 import { useState } from "react";
-import DashboardLayout from "@/components/DashboardLayout";
+import MainLayout from "@/components/MainLayout";
 import OrdersTable, { Order } from "@/components/OrdersTable";
 import KPICard from "@/components/KPICard";
+import { Truck, Clock, AlertTriangle } from "lucide-react";
 
 // Mock data
 const mockOrders: Order[] = [
@@ -50,6 +51,7 @@ const mockOrders: Order[] = [
 
 export default function EnRoute() {
   const [orders] = useState<Order[]>(mockOrders);
+  const [isLoading, setIsLoading] = useState(false);
   
   const handleViewDetails = (orderId: string) => {
     console.log(`Viewing details for order: ${orderId}`);
@@ -58,10 +60,14 @@ export default function EnRoute() {
   };
   
   return (
-    <DashboardLayout 
-      title="En Camino" 
-      description="Monitoreo de camiones en tránsito hacia la instalación"
-    >
+    <MainLayout>
+      <div className="mb-6">
+        <h1 className="text-[32px] font-semibold mb-2">En Camino</h1>
+        <p className="text-muted-foreground">
+          Monitoreo de camiones en tránsito hacia la instalación
+        </p>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <KPICard
           title="Camiones En Ruta"
@@ -69,55 +75,55 @@ export default function EnRoute() {
           description="Camiones actualmente en tránsito"
           trend={2}
           variant="default"
+          icon={<Truck className="size-5 text-slate-600" />}
         />
         <KPICard
           title="Tiempo Est. de Llegada"
           value="28 min"
           description="Promedio para próximas llegadas"
           variant="default"
+          icon={<Clock className="size-5 text-slate-600" />}
         />
         <KPICard
           title="Camiones Retrasados"
           value={1}
           description="Camiones con retraso en tránsito"
           variant="warning"
+          icon={<AlertTriangle className="size-5 text-yellow-600" />}
         />
       </div>
       
-      <div className="bg-white dark:bg-card rounded-lg shadow-sm border p-4 mb-6">
+      <div className="bg-white rounded-lg shadow-sm border p-4 mb-6">
         <h3 className="text-sm font-medium mb-2">Estado del tráfico</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-green-50 dark:bg-green-900/20 p-3 rounded-md">
+          <div className="bg-green-50 p-3 rounded-md">
             <span className="text-xs text-muted-foreground">Norte</span>
-            <p className="font-medium text-green-700 dark:text-green-400">Fluido</p>
+            <p className="font-medium text-green-700">Fluido</p>
           </div>
-          <div className="bg-yellow-50 dark:bg-yellow-900/20 p-3 rounded-md">
+          <div className="bg-yellow-50 p-3 rounded-md">
             <span className="text-xs text-muted-foreground">Sur</span>
-            <p className="font-medium text-yellow-700 dark:text-yellow-400">Moderado</p>
+            <p className="font-medium text-yellow-700">Moderado</p>
           </div>
-          <div className="bg-red-50 dark:bg-red-900/20 p-3 rounded-md">
+          <div className="bg-red-50 p-3 rounded-md">
             <span className="text-xs text-muted-foreground">Este</span>
-            <p className="font-medium text-red-700 dark:text-red-400">Congestionado</p>
+            <p className="font-medium text-red-700">Congestionado</p>
           </div>
-          <div className="bg-green-50 dark:bg-green-900/20 p-3 rounded-md">
+          <div className="bg-green-50 p-3 rounded-md">
             <span className="text-xs text-muted-foreground">Oeste</span>
-            <p className="font-medium text-green-700 dark:text-green-400">Fluido</p>
+            <p className="font-medium text-green-700">Fluido</p>
           </div>
         </div>
       </div>
       
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold">Camiones En Camino</h2>
-        <select className="text-sm border rounded-md px-2 py-1">
-          <option value="all">Todos los destinos</option>
-          <option value="north">Terminal Norte</option>
-          <option value="south">Terminal Sur</option>
-          <option value="east">Centro de Distribución Este</option>
-          <option value="main">Bodega Principal</option>
-        </select>
+      <div className="mb-4">
+        <h2 className="text-xl font-semibold mb-4">Camiones En Camino</h2>
       </div>
       
-      <OrdersTable orders={orders} onViewDetails={handleViewDetails} />
-    </DashboardLayout>
+      <OrdersTable 
+        orders={orders} 
+        onViewDetails={handleViewDetails}
+        loading={isLoading}
+      />
+    </MainLayout>
   );
 }

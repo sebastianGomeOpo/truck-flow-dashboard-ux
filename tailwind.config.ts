@@ -15,7 +15,7 @@ export default {
 			center: true,
 			padding: '1rem',
 			screens: {
-				'2xl': '1400px'
+				'2xl': '1440px'
 			}
 		},
 		extend: {
@@ -33,7 +33,7 @@ export default {
 					200: '#99C1D7',
 					300: '#66A2C3',
 					400: '#3383AF',
-					500: '#005B8F',
+					500: '#005B8F', // En camino (azul 600)
 					600: '#004E7A',
 					700: '#004066',
 					800: '#003351',
@@ -54,7 +54,7 @@ export default {
 					900: '#653B00',
 				},
 				destructive: {
-					DEFAULT: '#E53935',
+					DEFAULT: '#E53935', // Fuera de Tiempo (rojo 600)
 					foreground: '#FFFFFF',
 				},
 				warning: {
@@ -62,7 +62,7 @@ export default {
 					foreground: '#000000',
 				},
 				success: {
-					DEFAULT: '#2E7D32',
+					DEFAULT: '#10B981', // Activa (verde 600)
 					foreground: '#FFFFFF',
 				},
 				muted: {
@@ -107,6 +107,10 @@ export default {
 				"slide-in": {
 					"0%": { transform: "translateX(-100%)" },
 					"100%": { transform: "translateX(0)" },
+				},
+				"spin": {
+					"0%": { transform: "rotate(0deg)" },
+					"100%": { transform: "rotate(360deg)" },
 				}
 			},
 			animation: {
@@ -115,21 +119,25 @@ export default {
 				"pulse-slow": "pulse-slow 3s ease-in-out infinite",
 				"fade-in": "fade-in 0.5s ease-out",
 				"slide-in": "slide-in 0.3s ease-out",
+				"spin": "spin 0.6s ease-out",
 			},
 			fontFamily: {
 				sans: ['Inter', 'sans-serif'],
 			},
 			spacing: {
-				'4': '4px',
-				'8': '8px', 
-				'12': '12px',
-				'16': '16px',
-				'20': '20px',
-				'24': '24px',
-				'32': '32px',
-				'40': '40px',
-				'48': '48px',
-				'64': '64px',
+				'4': '4px',   // 1 unit
+				'8': '8px',   // 2 units
+				'12': '12px', // 3 units
+				'16': '16px', // 4 units
+				'20': '20px', // 5 units
+				'24': '24px', // 6 units
+				'32': '32px', // 8 units
+				'40': '40px', // 10 units
+				'48': '48px', // 12 units
+				'64': '64px', // 16 units
+			},
+			willChange: {
+				'transform': 'transform',
 			},
 		}
 	},

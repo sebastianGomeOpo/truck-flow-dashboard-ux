@@ -1,10 +1,12 @@
 
 import { useState } from "react";
-import DashboardLayout from "@/components/DashboardLayout";
+import MainLayout from "@/components/MainLayout";
 import OrdersTable, { Order } from "@/components/OrdersTable";
 import KPICard from "@/components/KPICard";
+import { AlertTriangle, Clock, TrendingDown } from "lucide-react";
+import BarChartClientes from "@/components/BarChartClientes";
 
-// Mock data
+// Mock data for orders
 const mockOrders: Order[] = [
   {
     id: "ORD-2930",
@@ -58,20 +60,45 @@ const mockOrders: Order[] = [
   }
 ];
 
+// Mock data for clients chart
+const mockClientsData = [
+  { name: "Transportes SA", value: 4 },
+  { name: "LogiTruck", value: 3 },
+  { name: "CargoExpress", value: 2 },
+  { name: "FastShipping", value: 1 },
+  { name: "TransNorte", value: 1 }
+];
+
 export default function Overdue() {
   const [orders] = useState<Order[]>(mockOrders);
+  const [isLoading, setIsLoading] = useState(false);
   
   const handleViewDetails = (orderId: string) => {
     console.log(`Viewing details for order: ${orderId}`);
-    // In a real application, this would navigate to a detail page
-    // or open a modal with the order details
+    // Analytics event
+    console.log('Analytics event: click_row_timeOverdue', { order_id: orderId });
   };
   
+  // Check if there are any critical delays (>150% of target time)
+  const hasCriticalDelays = orders.some(order => order.timeRemaining && order.timeRemaining < -30);
+  
   return (
-    <DashboardLayout 
-      title="Fuera de Tiempo" 
-      description="Órdenes que han excedido su tiempo objetivo de procesamiento"
-    >
+    <MainLayout>
+      {/* Banner for critical orders */}
+      {hasCriticalDelays && (
+        <div className="bg-red-50 border border-red-200 rounded-md p-3 mb-6 flex items-center text-red-700">
+          <AlertTriangle className="size-5 mr-2" />
+          <p className="font-medium">Camiones críticos: {orders.filter(o => o.timeRemaining && o.timeRemaining < -30).length}</p>
+        </div>
+      )}
+      
+      <div className="mb-6">
+        <h1 className="text-[32px] font-semibold mb-2">Fuera de Tiempo</h1>
+        <p className="text-muted-foreground">
+          Órdenes que han excedido su tiempo objetivo de procesamiento
+        </p>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <KPICard
           title="Órdenes Fuera de Tiempo"
@@ -79,6 +106,7 @@ export default function Overdue() {
           description="Total de órdenes retrasadas"
           trend={-12}
           variant="danger"
+          icon={<AlertTriangle className="size-5 text-red-600" />}
         />
         <KPICard
           title="Retraso Promedio"
@@ -86,6 +114,7 @@ export default function Overdue() {
           description="Tiempo promedio de retraso"
           trend={8}
           variant="danger"
+          icon={<Clock className="size-5 text-red-600" />}
         />
         <KPICard
           title="Cumplimiento Diario"
@@ -93,71 +122,23 @@ export default function Overdue() {
           description="Porcentaje de órdenes a tiempo"
           trend={-5}
           variant="warning"
+          icon={<TrendingDown className="size-5 text-yellow-600" />}
         />
       </div>
       
-      <div className="mb-6">
-        <h3 className="text-xl font-semibold mb-2">Causas de Retraso</h3>
-        <div className="bg-white dark:bg-card rounded-lg shadow-sm border p-4">
-          <div className="space-y-3">
-            <div>
-              <div className="flex justify-between text-sm mb-1">
-                <span>Documentación incompleta</span>
-                <span className="font-medium">38%</span>
-              </div>
-              <div className="w-full bg-muted rounded-full h-2">
-                <div className="bg-primary h-2 rounded-full" style={{ width: '38%' }}></div>
-              </div>
-            </div>
-            
-            <div>
-              <div className="flex justify-between text-sm mb-1">
-                <span>Problemas en balanza</span>
-                <span className="font-medium">24%</span>
-              </div>
-              <div className="w-full bg-muted rounded-full h-2">
-                <div className="bg-primary h-2 rounded-full" style={{ width: '24%' }}></div>
-              </div>
-            </div>
-            
-            <div>
-              <div className="flex justify-between text-sm mb-1">
-                <span>Llegada tarde del conductor</span>
-                <span className="font-medium">21%</span>
-              </div>
-              <div className="w-full bg-muted rounded-full h-2">
-                <div className="bg-primary h-2 rounded-full" style={{ width: '21%' }}></div>
-              </div>
-            </div>
-            
-            <div>
-              <div className="flex justify-between text-sm mb-1">
-                <span>Otras causas</span>
-                <span className="font-medium">17%</span>
-              </div>
-              <div className="w-full bg-muted rounded-full h-2">
-                <div className="bg-primary h-2 rounded-full" style={{ width: '17%' }}></div>
-              </div>
-            </div>
-          </div>
-        </div>
+      {/* Bar Chart for Clients */}
+      <BarChartClientes data={mockClientsData} />
+      
+      {/* Orders Table */}
+      <div className="mb-4">
+        <h2 className="text-xl font-semibold mb-4">Órdenes Fuera de Tiempo</h2>
       </div>
       
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold">Órdenes Fuera de Tiempo</h2>
-        <div className="flex gap-2">
-          <select className="text-sm border rounded-md px-2 py-1">
-            <option value="all">Todos los retrasos</option>
-            <option value="15">{'>'} 15 minutos</option>
-            <option value="30">{'>'} 30 minutos</option>
-          </select>
-          <button className="bg-primary text-primary-foreground text-sm px-3 py-1 rounded-md">
-            Reportar
-          </button>
-        </div>
-      </div>
-      
-      <OrdersTable orders={orders} onViewDetails={handleViewDetails} />
-    </DashboardLayout>
+      <OrdersTable 
+        orders={orders} 
+        onViewDetails={handleViewDetails}
+        loading={isLoading}
+      />
+    </MainLayout>
   );
 }

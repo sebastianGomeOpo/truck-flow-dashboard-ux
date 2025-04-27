@@ -1,5 +1,6 @@
 
 import { cn } from "@/lib/utils";
+import { TrendingDown, TrendingUp } from "lucide-react";
 
 interface KPICardProps {
   title: string;
@@ -11,6 +12,29 @@ interface KPICardProps {
   className?: string;
 }
 
+// Map variants to semantic colors from our design system
+const variantStyles = {
+  default: "bg-white border-muted/50",
+  success: "bg-white border-green-600/20",
+  warning: "bg-white border-yellow-600/20",
+  danger: "bg-white border-red-600/20"
+};
+
+// Map variants to icon background colors
+const iconBgStyles = {
+  default: "bg-slate-100",
+  success: "bg-green-50",
+  warning: "bg-yellow-50",
+  danger: "bg-red-50"
+};
+
+// Map variants to trend text colors
+const trendTextStyles = {
+  positive: "text-green-600",
+  negative: "text-red-600",
+  neutral: "text-gray-500"
+};
+
 export default function KPICard({
   title,
   value,
@@ -20,41 +44,48 @@ export default function KPICard({
   variant = 'default',
   className
 }: KPICardProps) {
-  const variantStyles = {
-    default: "bg-white dark:bg-card border-muted/50",
-    success: "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800",
-    warning: "bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800",
-    danger: "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800"
-  };
-
   return (
     <div className={cn(
-      "rounded-lg shadow-sm border p-4 flex flex-col",
+      "rounded-lg shadow-sm border p-6 flex flex-col", // Increased padding to 24px (6*4)
       variantStyles[variant],
       className
     )}>
-      <div className="flex justify-between items-start mb-2">
-        <h3 className="text-sm font-medium text-muted-foreground">{title}</h3>
-        {icon && <div className="text-muted-foreground">{icon}</div>}
+      <div className="flex justify-between items-start mb-3">
+        {icon && (
+          <div className={cn(
+            "flex items-center justify-center size-10 rounded-md",
+            iconBgStyles[variant]
+          )}>
+            {icon}
+          </div>
+        )}
+        <h3 className="text-base font-medium text-muted-foreground">{title}</h3>
       </div>
       
-      <div className="flex items-baseline">
+      <div className="flex items-baseline mt-1">
         <p className="text-2xl font-bold">{value}</p>
         
         {trend !== undefined && (
-          <span className={cn(
-            "ml-2 text-xs font-medium",
-            trend > 0 ? "text-green-600 dark:text-green-400" : 
-            trend < 0 ? "text-red-600 dark:text-red-400" : 
-            "text-gray-500"
-          )}>
-            {trend > 0 ? `+${trend}%` : trend < 0 ? `${trend}%` : `${trend}%`}
-          </span>
+          <div className="ml-3 flex items-center gap-1 text-sm">
+            {trend > 0 ? (
+              <>
+                <TrendingUp className="size-3.5" />
+                <span className={trendTextStyles.positive}>+{trend}%</span>
+              </>
+            ) : trend < 0 ? (
+              <>
+                <TrendingDown className="size-3.5" />
+                <span className={trendTextStyles.negative}>{trend}%</span>
+              </>
+            ) : (
+              <span className={trendTextStyles.neutral}>{trend}%</span>
+            )}
+          </div>
         )}
       </div>
       
       {description && (
-        <p className="mt-1 text-xs text-muted-foreground">{description}</p>
+        <p className="mt-1 text-sm text-muted-foreground">{description}</p>
       )}
     </div>
   );

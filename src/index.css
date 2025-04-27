@@ -75,27 +75,32 @@
   }
   
   body {
-    @apply bg-background text-foreground font-sans;
+    @apply bg-[#F5F7FA] text-foreground font-sans;
   }
 
   h1 {
-    @apply text-3xl font-bold tracking-tight;
+    @apply text-[32px] font-semibold tracking-tight;
   }
   
   h2 {
-    @apply text-2xl font-semibold tracking-tight;
+    @apply text-xl font-semibold tracking-tight;
   }
   
   h3 {
-    @apply text-xl font-semibold tracking-tight;
-  }
-
-  h4 {
     @apply text-lg font-semibold tracking-tight;
   }
 
+  h4 {
+    @apply text-base font-semibold tracking-tight;
+  }
+
   p {
-    @apply leading-6;
+    @apply text-sm leading-6;
+  }
+
+  /* Accessibility focus style */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-primary ring-offset-2;
   }
 }
 
@@ -122,6 +127,29 @@
 
 .truck-table td {
   @apply px-4 py-3 text-sm;
+}
+
+/* Pulse animation for critical rows */
+@keyframes pulse-border {
+  0% {
+    border-left-color: rgba(239, 68, 68, 1);
+  }
+  50% {
+    border-left-color: rgba(239, 68, 68, 0.4);
+  }
+  100% {
+    border-left-color: rgba(239, 68, 68, 1);
+  }
+}
+
+.pulse-border {
+  animation: pulse-border 2s ease-in-out infinite;
+  border-left: 4px solid rgba(239, 68, 68, 1);
+}
+
+/* Bar chart hover effect */
+.bar-chart-bar:hover {
+  fill: rgba(239, 68, 68, 1);
 }
 
 /* Mobile view adjustments */

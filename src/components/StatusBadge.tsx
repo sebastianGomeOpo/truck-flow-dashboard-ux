@@ -8,30 +8,32 @@ interface StatusBadgeProps {
   className?: string;
 }
 
+// Per design guideline #4: Color = state, not decoration
+// Blue 600 = En camino, Green 600 = Activa, Red 600 = Fuera tiempo
 const statusConfig = {
   'active': {
-    bgColor: 'bg-blue-100 dark:bg-blue-900/30',
-    textColor: 'text-blue-800 dark:text-blue-300',
+    bgColor: 'bg-green-100',
+    textColor: 'text-green-600',
     label: 'Activa'
   },
   'en-route': {
-    bgColor: 'bg-secondary-100 dark:bg-secondary-900/30',
-    textColor: 'text-secondary-800 dark:text-secondary-300',
+    bgColor: 'bg-blue-100',
+    textColor: 'text-blue-600',
     label: 'En Camino'
   },
   'completed': {
-    bgColor: 'bg-green-100 dark:bg-green-900/30',
-    textColor: 'text-green-800 dark:text-green-300',
+    bgColor: 'bg-gray-100',
+    textColor: 'text-gray-600',
     label: 'Completada'
   },
   'delayed': {
-    bgColor: 'bg-yellow-100 dark:bg-yellow-900/30',
-    textColor: 'text-yellow-800 dark:text-yellow-300',
+    bgColor: 'bg-yellow-100',
+    textColor: 'text-yellow-600',
     label: 'Retrasada'
   },
   'critical': {
-    bgColor: 'bg-red-100 dark:bg-red-900/30',
-    textColor: 'text-red-800 dark:text-red-300',
+    bgColor: 'bg-red-100',
+    textColor: 'text-red-600',
     label: 'Fuera de Tiempo'
   }
 };

@@ -9,7 +9,15 @@ import EnRoute from "./pages/EnRoute";
 import Overdue from "./pages/Overdue";
 import NotFound from "./pages/NotFound";
 
-const queryClient = new QueryClient();
+// Create a client for react-query
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: 1
+    },
+  },
+});
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
