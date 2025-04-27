@@ -1,9 +1,6 @@
 
-import { useState } from "react";
 import StatusBadge from "./StatusBadge";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { cn } from "@/lib/utils";
 
 // Define the order interface based on the requirements
 export interface Order {
@@ -21,17 +18,9 @@ export interface Order {
 interface OrdersTableProps {
   orders: Order[];
   onViewDetails?: (orderId: string) => void;
-  isLoading?: boolean;
-  variant?: 'default' | 'en-route';
 }
 
-export default function OrdersTable({ orders, onViewDetails, isLoading = false, variant = 'default' }: OrdersTableProps) {
-  const [highlightedRow, setHighlightedRow] = useState<string | null>(null);
-  
-  if (isLoading) {
-    return <TableSkeleton />;
-  }
-  
+export default function OrdersTable({ orders, onViewDetails }: OrdersTableProps) {
   if (orders.length === 0) {
     return (
       <div className="bg-white dark:bg-card rounded-lg shadow-sm p-8 text-center border">
@@ -53,21 +42,17 @@ export default function OrdersTable({ orders, onViewDetails, isLoading = false, 
     if (minutes === undefined) return 'N/A';
     
     if (minutes < 0) {
-      return <span className="text-destructive font-medium">{Math.abs(minutes)} min retraso</span>;
+      return <span className="text-red-600 font-medium">{Math.abs(minutes)} min retraso</span>;
     } else if (minutes <= 15) {
       return <span className="text-yellow-600 font-medium">{minutes} min restantes</span>;
     } else {
       return <span>{minutes} min restantes</span>;
     }
   };
-  
-  const isOverdueCritical = (order: Order) => {
-    return order.timeRemaining && order.timeRemaining < 0 && Math.abs(order.timeRemaining) > 20;
-  };
 
   return (
     <div className="bg-white dark:bg-card rounded-lg shadow-sm border">
-      <div className="table-container max-h-[70vh] overflow-auto">
+      <div className="table-container">
         <table className="truck-table">
           <thead>
             <tr>
@@ -76,32 +61,22 @@ export default function OrdersTable({ orders, onViewDetails, isLoading = false, 
               <th>Placa</th>
               <th>Destino</th>
               <th>Estado</th>
-              {variant !== 'en-route' && <th>Llegada</th>}
-              {variant !== 'en-route' && <th>Tiempo</th>}
+              <th>Llegada</th>
+              <th>Tiempo</th>
               <th>Prioridad</th>
               <th></th>
             </tr>
           </thead>
           <tbody>
             {orders.map((order) => (
-              <tr 
-                key={order.id} 
-                onMouseEnter={() => setHighlightedRow(order.id)}
-                onMouseLeave={() => setHighlightedRow(null)}
-                onClick={() => onViewDetails?.(order.id)}
-                className={cn(
-                  "cursor-pointer transition-all",
-                  highlightedRow === order.id ? "bg-muted/50" : "",
-                  isOverdueCritical(order) && "border-l-2 border-destructive animate-border-pulse"
-                )}
-              >
+              <tr key={order.id}>
                 <td className="font-medium">{order.id}</td>
                 <td>{order.driverName}</td>
                 <td>{order.plate}</td>
                 <td className="max-w-[180px] truncate">{order.destination}</td>
                 <td><StatusBadge status={order.status} /></td>
-                {variant !== 'en-route' && <td>{order.arrivalTime}</td>}
-                {variant !== 'en-route' && <td>{formatTimeRemaining(order.timeRemaining)}</td>}
+                <td>{order.arrivalTime}</td>
+                <td>{formatTimeRemaining(order.timeRemaining)}</td>
                 <td>
                   <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${getPriorityClass(order.priority)}`}>
                     {order.priority === 'high' ? 'Alta' : 
@@ -112,7 +87,7 @@ export default function OrdersTable({ orders, onViewDetails, isLoading = false, 
                   <Button 
                     variant="ghost" 
                     size="sm"
-                    className="focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
+                    onClick={() => onViewDetails?.(order.id)}
                   >
                     Detalles
                   </Button>
@@ -121,24 +96,6 @@ export default function OrdersTable({ orders, onViewDetails, isLoading = false, 
             ))}
           </tbody>
         </table>
-      </div>
-    </div>
-  );
-}
-
-function TableSkeleton() {
-  return (
-    <div className="bg-white dark:bg-card rounded-lg shadow-sm border">
-      <div className="p-4">
-        {Array.from({ length: 5 }).map((_, i) => (
-          <div key={i} className="flex gap-4 py-3 animate-pulse">
-            <Skeleton className="h-6 w-16" />
-            <Skeleton className="h-6 w-32" />
-            <Skeleton className="h-6 w-20" />
-            <Skeleton className="h-6 w-40" />
-            <Skeleton className="h-6 w-24" />
-          </div>
-        ))}
       </div>
     </div>
   );

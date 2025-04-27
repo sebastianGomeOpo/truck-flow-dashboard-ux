@@ -10,13 +10,13 @@ interface StatusBadgeProps {
 
 const statusConfig = {
   'active': {
-    bgColor: 'bg-success/10',
-    textColor: 'text-success',
+    bgColor: 'bg-blue-100 dark:bg-blue-900/30',
+    textColor: 'text-blue-800 dark:text-blue-300',
     label: 'Activa'
   },
   'en-route': {
-    bgColor: 'bg-info/10',
-    textColor: 'text-info',
+    bgColor: 'bg-secondary-100 dark:bg-secondary-900/30',
+    textColor: 'text-secondary-800 dark:text-secondary-300',
     label: 'En Camino'
   },
   'completed': {
@@ -30,8 +30,8 @@ const statusConfig = {
     label: 'Retrasada'
   },
   'critical': {
-    bgColor: 'bg-destructive/10',
-    textColor: 'text-destructive',
+    bgColor: 'bg-red-100 dark:bg-red-900/30',
+    textColor: 'text-red-800 dark:text-red-300',
     label: 'Fuera de Tiempo'
   }
 };
