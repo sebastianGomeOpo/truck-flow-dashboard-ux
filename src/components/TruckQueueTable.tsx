@@ -13,10 +13,10 @@ interface Truck {
   waitTime: string;
   cargo: string;
   status: 'active' | 'en-route' | 'completed' | 'delayed' | 'critical';
-  type: 'client' | 'warehouse'; // Nuevo campo para diferenciar entre cliente y almacén
+  type: 'client' | 'warehouse';
 }
 
-// Mock data for the trucks with type field added
+// Mock data for the trucks with type field
 const mockTrucks: Truck[] = [
   { id: "T-001", plate: "ABC-123", arrivalTime: "08:30", waitTime: "0:45", cargo: "Contenedor", status: "active", type: "client" },
   { id: "T-002", plate: "DEF-456", arrivalTime: "09:15", waitTime: "1:20", cargo: "Granel", status: "en-route", type: "warehouse" },
@@ -40,19 +40,19 @@ export default function TruckQueueTable() {
     }, 800);
   };
 
-  // Función para obtener la clase según el tipo
+  // Function to get the class based on type
   const getTypeClass = (type: string) => {
     switch (type) {
       case 'client':
-        return 'border-l-4 border-l-blue-400'; // Borde azul para clientes
+        return 'border-l-4 border-l-blue-400';
       case 'warehouse':
-        return 'border-l-4 border-l-green-400'; // Borde verde para almacén
+        return 'border-l-4 border-l-green-400';
       default:
         return '';
     }
   };
 
-  // Función para obtener el texto de tipo
+  // Function to get the type label
   const getTypeLabel = (type: string) => {
     switch (type) {
       case 'client':
@@ -73,76 +73,61 @@ export default function TruckQueueTable() {
   };
 
   return (
-    <div className="col-span-12 lg:col-span-8">
-      <h2 className="text-xl font-semibold mb-4">Cola de Camiones</h2>
-      <Card>
-        <CardHeader className="pb-0">
-          <CardTitle className="text-lg flex justify-between">
-            <span>Camiones en Espera</span>
-            <div className="text-sm font-normal text-muted-foreground">
-              Última actualización: {new Date().toLocaleTimeString()}
-            </div>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="overflow-auto max-h-[350px]">
-            {loading ? (
-              <TableSkeleton rows={5} columns={7} />
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>ID</TableHead>
-                    <TableHead>Placa</TableHead>
-                    <TableHead>Hora de llegada</TableHead>
-                    <TableHead>Tiempo de espera</TableHead>
-                    <TableHead>Tipo de carga</TableHead>
-                    <TableHead>Estado</TableHead>
-                    <TableHead>Tipo</TableHead>
+    <Card className="shadow-sm h-full">
+      <CardHeader className="pb-0">
+        <CardTitle className="text-lg flex justify-between items-center">
+          <span>Cola de Camiones</span>
+          <div className="text-sm font-normal text-muted-foreground">
+            Última actualización: {new Date().toLocaleTimeString()}
+          </div>
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="overflow-auto max-h-[350px]">
+          {loading ? (
+            <TableSkeleton rows={5} columns={7} />
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>ID</TableHead>
+                  <TableHead>Placa</TableHead>
+                  <TableHead>Hora de llegada</TableHead>
+                  <TableHead>Tiempo de espera</TableHead>
+                  <TableHead>Tipo de carga</TableHead>
+                  <TableHead>Estado</TableHead>
+                  <TableHead>Tipo</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {trucks.map((truck) => (
+                  <TableRow 
+                    key={truck.id} 
+                    className={cn(
+                      "hover:bg-muted/50 cursor-pointer transition-colors",
+                      truck.status === "critical" && "pulse-border",
+                      getTypeClass(truck.type)
+                    )}
+                  >
+                    <TableCell className="font-medium">{truck.id}</TableCell>
+                    <TableCell>{truck.plate}</TableCell>
+                    <TableCell>{truck.arrivalTime}</TableCell>
+                    <TableCell>{truck.waitTime}</TableCell>
+                    <TableCell>{truck.cargo}</TableCell>
+                    <TableCell>
+                      <StatusBadge status={truck.status} />
+                    </TableCell>
+                    <TableCell>
+                      {getTypeLabel(truck.type)}
+                    </TableCell>
                   </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {trucks.map((truck) => (
-                    <TableRow 
-                      key={truck.id} 
-                      className={cn(
-                        "hover:bg-muted/50 cursor-pointer transition-colors",
-                        truck.status === "critical" && "pulse-border",
-                        getTypeClass(truck.type)
-                      )}
-                    >
-                      <TableCell className="font-medium">{truck.id}</TableCell>
-                      <TableCell>{truck.plate}</TableCell>
-                      <TableCell>{truck.arrivalTime}</TableCell>
-                      <TableCell>{truck.waitTime}</TableCell>
-                      <TableCell>{truck.cargo}</TableCell>
-                      <TableCell>
-                        <StatusBadge status={truck.status} />
-                      </TableCell>
-                      <TableCell>
-                        {getTypeLabel(truck.type)}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
-          </div>
-          
-          {/* Leyenda */}
-          <div className="mt-4 flex gap-4 text-sm">
-            <div className="flex items-center">
-              <div className="w-3 h-3 rounded-full bg-blue-400 mr-2"></div>
-              <span>Cliente</span>
-            </div>
-            <div className="flex items-center">
-              <div className="w-3 h-3 rounded-full bg-green-400 mr-2"></div>
-              <span>Almacén</span>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 
