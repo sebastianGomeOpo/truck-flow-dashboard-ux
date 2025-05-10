@@ -18,6 +18,7 @@ export interface Order {
   status: 'active' | 'en-route' | 'completed' | 'delayed' | 'critical';
   timeRemaining?: number; // in minutes
   priority: 'low' | 'medium' | 'high';
+  type?: 'client' | 'warehouse'; // Nuevo campo para diferenciar entre cliente y almacén
 }
 
 interface OrdersTableProps {
@@ -79,6 +80,38 @@ export default function OrdersTable({ orders, loading = false, onViewDetails }: 
     minute: '2-digit'
   });
 
+  // Función para obtener la clase según el tipo
+  const getTypeClass = (type?: string) => {
+    switch (type) {
+      case 'client':
+        return 'border-l-4 border-l-blue-400'; // Borde azul para clientes
+      case 'warehouse':
+        return 'border-l-4 border-l-green-400'; // Borde verde para almacén
+      default:
+        return '';
+    }
+  };
+
+  // Función para obtener el texto de tipo
+  const getTypeLabel = (type?: string) => {
+    switch (type) {
+      case 'client':
+        return (
+          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-50 text-blue-700">
+            Cliente
+          </span>
+        );
+      case 'warehouse':
+        return (
+          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-50 text-green-700">
+            Almacén
+          </span>
+        );
+      default:
+        return <span className="text-gray-400">No especificado</span>;
+    }
+  };
+
   return (
     <div className="space-y-2">
       <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
@@ -93,6 +126,7 @@ export default function OrdersTable({ orders, loading = false, onViewDetails }: 
               <TableHead className="hidden md:table-cell">Llegada</TableHead>
               <TableHead>Tiempo</TableHead>
               <TableHead className="hidden md:table-cell">Prioridad</TableHead>
+              <TableHead>Tipo</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -104,7 +138,8 @@ export default function OrdersTable({ orders, loading = false, onViewDetails }: 
                   key={order.id}
                   className={cn(
                     "cursor-pointer hover:bg-gray-100 transition-colors",
-                    isCritical && "relative pulse-border"
+                    isCritical && "relative pulse-border",
+                    getTypeClass(order.type)
                   )}
                   onClick={() => handleRowClick(order)}
                 >
@@ -128,6 +163,9 @@ export default function OrdersTable({ orders, loading = false, onViewDetails }: 
                       {order.priority === 'high' ? 'Alta' : 
                       order.priority === 'medium' ? 'Media' : 'Baja'}
                     </span>
+                  </TableCell>
+                  <TableCell>
+                    {getTypeLabel(order.type)}
                   </TableCell>
                 </TableRow>
               );
@@ -182,6 +220,10 @@ export default function OrdersTable({ orders, loading = false, onViewDetails }: 
                   <div>
                     <h4 className="text-sm font-medium text-muted-foreground">Destino</h4>
                     <p>{selectedOrder.destination}</p>
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-medium text-muted-foreground">Tipo</h4>
+                    {getTypeLabel(selectedOrder.type)}
                   </div>
                 </div>
                 

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import MainLayout from "@/components/MainLayout";
 import OrdersTable, { Order } from "@/components/OrdersTable";
@@ -16,7 +15,8 @@ const mockOrders: Order[] = [
     departureTime: "11:45 AM",
     status: "active",
     timeRemaining: 45,
-    priority: "low"
+    priority: "low",
+    type: "client"
   },
   {
     id: "ORD-2946",
@@ -27,7 +27,8 @@ const mockOrders: Order[] = [
     departureTime: undefined,
     status: "active",
     timeRemaining: 12,
-    priority: "medium"
+    priority: "medium",
+    type: "warehouse"
   },
   {
     id: "ORD-2947",
@@ -38,7 +39,8 @@ const mockOrders: Order[] = [
     departureTime: undefined,
     status: "delayed",
     timeRemaining: -5,
-    priority: "high"
+    priority: "high",
+    type: "client"
   },
   {
     id: "ORD-2948",
@@ -49,7 +51,8 @@ const mockOrders: Order[] = [
     departureTime: undefined,
     status: "active",
     timeRemaining: 60,
-    priority: "low"
+    priority: "low",
+    type: "warehouse"
   },
   {
     id: "ORD-2949",
@@ -60,7 +63,8 @@ const mockOrders: Order[] = [
     departureTime: undefined,
     status: "active",
     timeRemaining: 32,
-    priority: "medium"
+    priority: "medium",
+    type: "client"
   }
 ];
 
