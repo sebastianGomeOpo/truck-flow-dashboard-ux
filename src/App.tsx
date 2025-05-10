@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import EnRoute from "./pages/EnRoute";
 import Overdue from "./pages/Overdue";
 import NotFound from "./pages/NotFound";
+import DashboardPage from "./pages/DashboardPage";
 
 // Create a client for react-query
 const queryClient = new QueryClient({
@@ -26,7 +27,8 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Index />} />
+          <Route path="/" element={<DashboardPage />} />
+          <Route path="/ordenes-activas" element={<Index />} />
           <Route path="/en-camino" element={<EnRoute />} />
           <Route path="/fuera-tiempo" element={<Overdue />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
