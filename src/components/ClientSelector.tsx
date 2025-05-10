@@ -9,6 +9,7 @@ import {
   CommandGroup,
   CommandInput,
   CommandItem,
+  CommandList,
 } from "@/components/ui/command";
 import {
   Popover,
@@ -54,27 +55,29 @@ export default function ClientSelector() {
         <PopoverContent className="w-[300px] p-0">
           <Command>
             <CommandInput placeholder="Buscar cliente..." className="h-9" />
-            <CommandEmpty>No se encontraron clientes.</CommandEmpty>
-            <CommandGroup>
-              {clients.map((client) => (
-                <CommandItem
-                  key={client.value}
-                  value={client.value}
-                  onSelect={(currentValue) => {
-                    setValue(currentValue === value ? "" : currentValue);
-                    setOpen(false);
-                  }}
-                >
-                  {client.label}
-                  <Check
-                    className={cn(
-                      "ml-auto h-4 w-4",
-                      value === client.value ? "opacity-100" : "opacity-0"
-                    )}
-                  />
-                </CommandItem>
-              ))}
-            </CommandGroup>
+            <CommandList>
+              <CommandEmpty>No se encontraron clientes.</CommandEmpty>
+              <CommandGroup>
+                {clients.map((client) => (
+                  <CommandItem
+                    key={client.value}
+                    value={client.value}
+                    onSelect={(currentValue) => {
+                      setValue(currentValue === value ? "" : currentValue);
+                      setOpen(false);
+                    }}
+                  >
+                    {client.label}
+                    <Check
+                      className={cn(
+                        "ml-auto h-4 w-4",
+                        value === client.value ? "opacity-100" : "opacity-0"
+                      )}
+                    />
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </CommandList>
           </Command>
         </PopoverContent>
       </Popover>
