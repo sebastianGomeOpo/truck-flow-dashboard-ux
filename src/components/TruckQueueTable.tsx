@@ -1,9 +1,9 @@
-
 import { useState } from "react";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "./ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Skeleton } from "./ui/skeleton";
 import StatusBadge from "./StatusBadge";
+import { cn } from "@/lib/utils";
 
 interface Truck {
   id: string;
